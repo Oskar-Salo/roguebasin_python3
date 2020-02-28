@@ -902,11 +902,11 @@ class Game():
                 Snake(random.randint(r.x1 + 1, r.x2 - 1), random.randint(r.y1 + 1, r.y2 - 1), z)
             if random.random() < 0.1:
                 Yeti(random.randint(r.x1 + 1, r.x2 - 1), random.randint(r.y1 + 1, r.y2 - 1), z)
-            if random.random() < 0.015:
+            if random.random() < 0.019:
                 Dragon(random.randint(r.x1 + 1, r.x2 - 1), random.randint(r.y1 + 1, r.y2 - 1), z)
-            if random.random() < 0.04:
+            if random.random() < 0.05:
                 Gold(random.randint(r.x1 + 1, r.x2 - 1), random.randint(r.y1 + 1, r.y2 - 1), z)
-            if random.random() < 0.06:
+            if random.random() < 0.07:
                 Shop(random.randint(r.x1 + 1, r.x2 - 1), random.randint(r.y1 + 1, r.y2 - 1), z)
 
     def use_stairs(self):
