@@ -519,6 +519,7 @@ class Wolf(Monster):
         self.defense = (2, 5)
         self.damage = (2, 4)
         self.agility = 0.4
+        self.hint = "a fast wolf"
         self.natural_weapons = [WolfBite()]
         self.image_name = "direwolf"
 
@@ -532,6 +533,7 @@ class Snake(Monster):
         self.attack = (2, 4)
         self.defense = (3, 3)
         self.damage = (3, 4)
+        self.hint = "a poisonous snake"
         self.natural_weapons = [SnakeBite()]
         self.image_name = "snake"
 
@@ -545,6 +547,7 @@ class Yeti(Monster):
         self.attack = (8, 2)
         self.defense = (4, 3)
         self.damage = (4, 5)
+        self.hint = "a strong yeti"
         self.natural_weapons = [YetiSnowBall(), YetiSlap()]
         self.image_name = "yeti"
 
@@ -558,6 +561,7 @@ class Dragon(Monster):
         self.attack = (6, 3)
         self.defense = (6, 3)
         self.damage = (5, 3)
+        self.hint = "a dangerous fire dragon"
         self.natural_weapons = [DragonBite(), DragonClaw(), DragonTail(), FireBreath()]
         self.image_name = "dragon"
 
@@ -608,8 +612,8 @@ class Game():
         Game.cursor_x = self.player.x
         Game.cursor_y = self.player.y
         # Monster(2,2,0)
-        Wolf(2, 2, 0)
-        Snake(3, 3, 0)
+        Wolf(4, 5, 0)
+        #Snake(3, 3, 0)
         #Scroll(4, 4, 0)
         #Scroll(4, 5, 0)
         #Scroll(5, 4, 0)
@@ -892,13 +896,13 @@ class Game():
         # -------------create monsters in rooms ------------------
         # print("rooms", rooms)
         for r in rooms:
-            if random.random() < 0.66:
+            if random.random() < 0.3:
                 Wolf(random.randint(r.x1 + 1, r.x2 - 1), random.randint(r.y1 + 1, r.y2 - 1), z)
-            if random.random() < 0.66:
+            if random.random() < 0.25:
                 Snake(random.randint(r.x1 + 1, r.x2 - 1), random.randint(r.y1 + 1, r.y2 - 1), z)
-            if random.random() < 0.15:
-                Yeti(random.randint(r.x1 + 1, r.x2 - 1), random.randint(r.y1 + 1, r.y2 - 1), z)
             if random.random() < 0.1:
+                Yeti(random.randint(r.x1 + 1, r.x2 - 1), random.randint(r.y1 + 1, r.y2 - 1), z)
+            if random.random() < 0.015:
                 Dragon(random.randint(r.x1 + 1, r.x2 - 1), random.randint(r.y1 + 1, r.y2 - 1), z)
 
     def use_stairs(self):
@@ -1542,7 +1546,7 @@ class Viewer():
         # --- print hints ----
         y = 135 + 20 * dy + 50
         for h in hints:
-            write(self.panelscreen, text=h, x=5, y=y, color=(0,0,0), font_size=10)
+            write(self.panelscreen, text=h, x=5, y=y, color=(0,0,0), font_size=11)
             y += 20
         
         # ---- magic scrolls ----- 
