@@ -434,8 +434,9 @@ class Scroll(Object):
     def _overwrite(self):
         self.color = (200,200,0)
         self.char="i"
+        self.hint = "consumable magic scroll "
         self.spell = random.choice(("disarm", "disarm", "confuse", "confuse", "confuse", "hurt", "hurt", "bleed", "bleed", "combat bless", "combat bless", "defense bless", "defense bless", "bull strength", "bull strength", "dragon strength", "dragon strength", "superman")) 
-        #opnoweapon opnoattack
+        #disarm onfuse hurt bleed combat bless defense bless bull strenght dragon strenght superman
 
 class Shop(Object):
     """a shop to trade items"""
@@ -443,7 +444,7 @@ class Shop(Object):
         self.color= ( 200,200,0)
         self.stay_visible_once_explored = True
         self.char = "$"
-        self.hint = "press Space to buy hp. 1 Gold = 10hp you can't have more than 100hp"
+        self.hint = "press space to buy 10hp @ 1$"
 
 class Stair(Object):
     """a stair, going upwards < or downwards >"""
@@ -574,6 +575,7 @@ class Player(Monster):
         self.natural_weapons = [Fist(), Kick()]
         self.items = {}
         self.gold = 10
+        self.scrolls = {}
         self.image_name = "arch-mage"
 
 
@@ -608,6 +610,10 @@ class Game():
         # Monster(2,2,0)
         Wolf(2, 2, 0)
         Snake(3, 3, 0)
+        #Scroll(4, 4, 0)
+        #Scroll(4, 5, 0)
+        #Scroll(5, 4, 0)
+        #Scroll(5, 5, 0)
         #Yeti(4, 4, 0)
         #Dragon(25, 5, 0)
         #Shop(7,1,0)
@@ -647,6 +653,16 @@ class Game():
                     self.player.gold += o.value
                     # kill gold from dungeon
                     del Game.objects[o.number]
+                elif o.is_member("Scroll"):
+                    Game.log.append("you found a scroll of {}".format(o.spell))
+                    if o.spell in self.player.scrolls:
+                        self.player.scrolls[o.spell] += 1
+                    else:
+                        self.player.scrolls[o.spell] = 1
+                    # kill scroll
+                    del Game.objects[o.number]
+                    
+                    
 
 
 
@@ -1269,7 +1285,8 @@ class Viewer():
                             pygame.Surface.subsurface(feats_dark_img, (439, 192, 32, 32)) )
         self.gold_tiles = ( pygame.Surface.subsurface(main_img,       (207, 655, 26, 20)),
                             pygame.Surface.subsurface(main_dark_img,  (207, 655, 26, 20)) )
-
+        self.scroll_tiles = ( pygame.Surface.subsurface(main_img,       (188, 412, 27, 28)),
+                            pygame.Surface.subsurface(main_dark_img,  (188, 412, 27, 28)) )
 
 
 
@@ -1285,6 +1302,7 @@ class Viewer():
                        "Y": self.yeti_tiles,
                        "D": self.dragon_tiles,
                        "*": self.gold_tiles,
+                       "i": self.scroll_tiles,
 
                        }  # rest of legend in wall_and_floor_theme
 
@@ -1526,7 +1544,13 @@ class Viewer():
         for h in hints:
             write(self.panelscreen, text=h, x=5, y=y, color=(0,0,0), font_size=10)
             y += 20
-
+        
+        # ---- magic scrolls ----- 
+        for spell in self.game.player.scrolls:
+            t = "{}: {}".format(spell, self.game.player.scrolls[spell])
+            write(self.panelscreen, text=t, x=5, y=y, color=(80,0,80), font_size=18)
+            y += 15
+        
         # blit panelscreen
         # ----- friend and foe ----
         #self.panelscreen.blit(self.images[Game.friend_image], (10, 400))
