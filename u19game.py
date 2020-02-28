@@ -904,6 +904,10 @@ class Game():
                 Yeti(random.randint(r.x1 + 1, r.x2 - 1), random.randint(r.y1 + 1, r.y2 - 1), z)
             if random.random() < 0.015:
                 Dragon(random.randint(r.x1 + 1, r.x2 - 1), random.randint(r.y1 + 1, r.y2 - 1), z)
+            if random.random() < 0.04:
+                Gold(random.randint(r.x1 + 1, r.x2 - 1), random.randint(r.y1 + 1, r.y2 - 1), z)
+            if random.random() < 0.06:
+                Shop(random.randint(r.x1 + 1, r.x2 - 1), random.randint(r.y1 + 1, r.y2 - 1), z)
 
     def use_stairs(self):
         """go up or done one dungeon level, depending on stair"""
