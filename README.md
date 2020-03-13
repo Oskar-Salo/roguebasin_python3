@@ -1,4 +1,4 @@
-# roguebasin_python3
+# PyDungeon
 
 ![screenshot1pydungeon.png](screenshot1pydungeon.png)
 ![screenshot2pydungeon.png](screenshot2pydungeon.png)
