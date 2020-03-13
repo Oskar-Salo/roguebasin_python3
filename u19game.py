@@ -12,7 +12,14 @@ also see http://www.roguebasin.com/index.php?title=Comparative_study_of_field_of
 field of view improving, removing of artifacts:
 https://sites.google.com/site/jicenospam/visibilitydetermination
 
+
+
+field of view improving, removing of artifacts:
+see https://sites.google.com/site/jicenospam/visibilitydetermination
+
+graphics mostly from Dungeon Crawl: http://crawl.develz.org/
 """
+
 import pygame
 import random
 # import inspect
@@ -917,7 +924,7 @@ class Gold(Item):
         super()._overwrite()
         self.color = (200, 200, 0)
         self.char = "*"
-        self.value = random.randint(1, 100)
+        self.value = random.randint(2, 6)
 
 class Arrows(Item):
 
@@ -938,11 +945,19 @@ class Immobile(Object):
 class Shop(Immobile):
     """a shop to trade items"""
 
+    images_closed = []
+
+    def close_shop(self):
+        self.closed = True
+        self.images = Shop.images_closed
+
     def _overwrite(self):
         super()._overwrite()
+        #self.images = Shop.images
         self.color = (200, 200, 0)
         self.char = "$"
         self.hint = "press Space to buy hp"
+        self.closed = False
 
 class StairUp(Immobile):
     """a stair, going upwards < or downwards >"""
@@ -1094,13 +1109,13 @@ class Player(Monster):
         self.char = "@"
         self.color = (0, 0, 255)
         self.hitpoints = 100
-        self.hitpoints_max = 100
+        self.hitpoints_max = 125
         self.attack = (3, 6)
         self.defense = (3, 5)
         self.damage = (4, 5)
         self.natural_weapons = [Fist(), Kick()]
         self.items = {}
-        self.gold = 100
+        self.gold = 0
         self.scrolls = {}
         self.scroll_list = []
         self.victims = {}
@@ -1148,23 +1163,23 @@ class Game():
         Game.cursor_x = self.player.x
         Game.cursor_y = self.player.y
         # Monster(2,2,0)
-        Wolf(2, 2, 0)
+        Wolf(6, 5, 0)
         #Yeti(2,2,0)
-        Snake(3, 3, 0)
-        Yeti(4, 4, 0)
-        Dragon(33, 6, 0)
-        Dragon(30, 5, 0)
-        Dragon(31, 4, 0)
-        Shop(7, 1, 0)
-        for a in range(5):
-            Gold(2, 1+a , 0)
-        Gold(3,1,0)
+        #Snake(3, 3, 0)
+        #Yeti(4, 4, 0)
+        #Dragon(33, 6, 0)
+        #Dragon(30, 5, 0)
+        #Dragon(31, 4, 0)
+        #Shop(7, 1, 0)
+        #for a in range(5):
+        #    Gold(2, 1+a , 0)
+        #Gold(3,1,0)
         Gold(4,1,0)
 
-        for _ in range(15):
-            Scroll(4, 4, 0)
-            Scroll(5, 4, 0)
-            Scroll(4, 6, 0)
+        #for _ in range(15):
+        Scroll(4, 4, 0)
+            #Scroll(5, 4, 0)
+            #Scroll(4, 6, 0)
 
         self.levelmonsters = [Snake,Wolf, Yeti, Dragon ]
         self.lootlist = [Gold, Arrows, Scroll]
@@ -1184,6 +1199,45 @@ class Game():
         self.place_loot(z=1)
 
         self.turn = 1
+
+    def wait_a_turn(self):
+        Game.log.append("You stay around for one turn")
+
+    def shopping(self):
+        """shop hp for gold if player stays on a shop
+        otherwise, just wait a turn doing nothing
+        return True if shopping sucessfull, otherwise return False"""
+        # -----on shop buy 10 hp for one gold------
+        for o in [o for o in Game.objects.values() if o.z == self.player.z and
+                  o.x == self.player.x and  o.y == self.player.y and
+                  isinstance(o, Shop)]:
+            # player is in a shop
+            if o.closed:
+                Game.log.append("This shop has gone out of business. Find another shop!")
+                return False
+            if self.player.gold <= 0:
+                Game.log.append("You found a shop but you lack Gold to buy anything :-(")
+                return False
+            # player is in shop and has gold
+            if self.player.hitpoints >= self.player.hitpoints_max:
+                Game.log.append("You are already at your maximum health. Shopping is useless now.")
+                return False
+            # shopping
+            self.player.gold -= 1
+            self.player.hitpoints += 10
+            self.player.hitpoints = min(self.player.hitpoints, self.player.hitpoints_max)
+            Game.log.append("You spent one gold for healing")
+            # 20% chance that shop dissapears
+            if random.random() < 0.2:
+                o.close_shop()  # = True
+                Game.log.append("The shop is closed for business")
+            return True
+        else: # no shop found here
+            self.wait_a_turn()
+            return False
+
+
+
 
 
     def new_turn(self):
@@ -1589,9 +1643,10 @@ class Game():
                     x = random.randint(room.x1+1, room.x2-1)
                     y = random.randint(room.y1+1, room.y2-1)
                 except:
-                    print("problem with placing monster")
+                    print("problem with placing monster in room:{}".format(room))
                     return
-                mo(x,y,z) 
+                mo(x,y,z) # create a new monster
+
 
     def place_loot(self, z):
         """each floor tile has a small chance to spawn loot and very small chance to spawn a shop"""
@@ -2029,7 +2084,7 @@ class Viewer():
         monster_tile = make_text("M", font_color=(139, 105, 20), grid_size=self.grid_size)[0]
         Monster.images =  (monster_tile, monster_tile)
         ##self.player_tile = make_text("@", font_color=self.game.player.color, grid_size=self.grid_size)[0]
-        player_tile = pygame.Surface.subsurface(player_img, (597, 1087, 23, 32))
+        player_tile = pygame.Surface.subsurface(player_img, (245, 991, 26, 31))
         player_tile_r = pygame.transform.flip(player_tile, True, False)
         Player.images = (player_tile, player_tile_r)
         yeti_tile = pygame.Surface.subsurface(player_img, (193, 1279, 32, 32))
@@ -2044,6 +2099,9 @@ class Viewer():
         # --- item/immobile tiles (scrolls etc) with light and dark
         Shop.images = (pygame.Surface.subsurface(feats_img, (439, 192, 32, 32)),
                      pygame.Surface.subsurface(feats_dark_img, (439, 192, 32, 32)))
+        Shop.images_closed = (pygame.Surface.subsurface(feats_img, (695, 192, 32, 32)),
+                       pygame.Surface.subsurface(feats_dark_img, (695, 192, 32, 32)))
+
         Gold.images = (pygame.Surface.subsurface(main_img, (207, 655, 26, 20)),
                        pygame.Surface.subsurface(main_dark_img, (207, 655, 26, 20)))
         Scroll.images = (pygame.Surface.subsurface(main_img, (188, 412, 27, 28)),
@@ -2176,6 +2234,7 @@ class Viewer():
                 for o in [o for o in Game.objects.values() if
                           isinstance(o, Immobile) and o.z == z and
                           o.x == x and o.y == y]:
+                    #print(dark)
                     c = o.images[dark]
                     if dark and not map_tile.explored:
                             continue # skip
@@ -2463,15 +2522,15 @@ class Viewer():
             self.game.check_player()  # if player has hitpoints left
             if Game.game_over:
                 Flytext(text="Game Over", fontsize=100, pos=pygame.math.Vector2(self.pcx, self.pcy),
-                        move=pygame.math.Vector2(0, -5), acceleration_factor=1.0, color=(20,20,200))
+                        move=pygame.math.Vector2(0, -5), acceleration_factor=1.0, color=(205,0,0))
                 for dy, v in enumerate(self.game.player.victims):
                     #print(v, self.game.player.victims[v])
                     Flytext(text="you killed {} {}".format(self.game.player.victims[v],v),
                             pos=pygame.math.Vector2(self.pcx, self.pcy + 50+20 * dy),
                             move=pygame.math.Vector2(0, -5), acceleration_factor=1.0,
-                            fontsize=25, color=(40,40,240))
+                            fontsize=25, color=(205,0,0))
 
-                self.animation = self.playtime + 5 + dy* 0.5
+                    self.animation = self.playtime + 5 + dy* 0.5
                 self.animate_sprites_only()
                 running = False
             milliseconds = self.clock.tick(self.fps)  #
@@ -2615,27 +2674,10 @@ class Viewer():
 
                         if event.key == pygame.K_SPACE:
                             # Game.turn += 1  # wait a turn
-                            Game.log.append("You stay around for one turn")
-
-                            # -----on shop buy 10 hp for one gold------
-                            for o in Game.objects.values():
-                                if (o.z == self.game.player.z and
-                                        o.x == self.game.player.x and
-                                        o.y == self.game.player.y and
-                                        self.game.player.gold > 0 and
-                                        isinstance(o, Shop)):
-                                    # and o.__class__.__name__=="Shop"):
-                                    self.game.player.gold -= 1
-                                    self.game.player.hitpoints += 10
-                                    self.start_healing_sprites()
-
+                            if self.game.shopping():
+                                 self.start_healing_sprites()
                             self.new_turn_in_Viewer()
 
-                            #self.redraw = True
-
-                        #if event.key == pygame.K_x:
-                        #    Flytext(text="Hallo Horst", pos=pygame.math.Vector2(300, 300), move=pygame.math.Vector2(0, -10),
-                        #            max_age=15)
 
                         if event.key == pygame.K_f:
                             # fire arrow to cursor
@@ -2657,7 +2699,15 @@ class Viewer():
                             if self.game.use_stairs():
                                 self.redraw = True
                                 self.wall_and_floor_theme()  # new walls and floor colors
-
+                                if self.game.player.z == 15:
+                                    Flytext("You have won", fontsize= 100, color=(230,239,25),
+                                            pos=pygame.math.Vector2(Viewer.width//2,Viewer.height//2),
+                                            move=pygame.math.Vector2(0,0))
+                                    self.animation = self.playtime + 5
+                                    self.animate_sprites_only()
+                                    
+    
+                                        
                         if event.key == pygame.K_PLUS:
                             if event.mod & pygame.KMOD_SHIFT:
                                 # zoom out radar
@@ -2701,10 +2751,11 @@ class Viewer():
 
             if len(self.allgroup) >1:
                 self.draw_radar()
-                self.draw_panel()  # always draw panel #über allgropu draw: münzen sichtbar,  flackert
+                #self.draw_panel()  # always draw panel #über allgropu draw: münzen sichtbar,  flackert
                 # append radar and panel to dirtyrects
-                dirtyrects.append(pygame.Rect(Viewer.width-Viewer.panel_width, 0, Viewer.panel_width, Viewer.height))
-            #self.draw_panel()  # always draw panel #unter allgropu draw: münzen unsichtbar, flackert
+                #dirtyrects.append(pygame.Rect(Viewer.width-Viewer.panel_width, 0, Viewer.panel_width, Viewer.height))
+            self.draw_panel()  # always draw panel #unter allgropu draw: münzen unsichtbar, flackert
+            dirtyrects.append(pygame.Rect(Viewer.width - Viewer.panel_width, 0, Viewer.panel_width, Viewer.height))
             dirtyrects.extend(self.allgroup.draw(self.screen))
 
 
