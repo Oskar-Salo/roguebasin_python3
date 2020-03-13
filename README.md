@@ -14,7 +14,6 @@ pygame installieren von http://pygame.org
 
 Bitte spiel starten: ''python u19game.py''
 
-
 ## Steuerung
 
 Den Spieler bewegt man mit den Pfeiltasten.
