@@ -1,5 +1,9 @@
 # roguebasin_python3
+
 ![screenshot1pydungeon.png](screenshot1pydungeon.png)
+![screenshot2pydungeon.png](screenshot2pydungeon.png)
+![screenshot3pydungeon.png](screenshot3pydungeon.png)
+
 ## Installationsanleitung
 
 Bitte python3 installieren von http://www.python.org
