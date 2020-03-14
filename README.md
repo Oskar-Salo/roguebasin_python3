@@ -64,3 +64,8 @@ Magic missile: eine Kugel die 20 Schaden macht.
 Bleed: Der Gegner bekommt 20 Schaden. Dies geht auch durch die Wand.
 Fireball: Ein Ball welcher dem Gegner 10 Schaden macht.
 
+## Für die u19 Jury
+
+In der Einreichung auf der Ars-Plattform sind noch veraltete Bilder. Bitte diese ignorieren.
+Ich habe das Spiel in meinem Programmierkurs gemacht. Mein Lehrer hat es dann auch
+anderen Kindern dort gegeben zum Weiterlernen.
